@@ -6,48 +6,49 @@
     <title>idk Store</title>
     <style>
         :root {
-            --bg: #090d16;
-            --card-bg: #131b2e;
+            --bg: #0b0f19;
+            --card-bg: #151c2c;
             --accent: #2563eb;
-            --text-main: #f8fafc;
-            --text-sub: #94a3b8;
-            --border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-sub: #8e9bae;
+            --border: rgba(255, 255, 255, 0.05);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding-bottom: 90px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding-bottom: 85px; -webkit-font-smoothing: antialiased; }
 
-        .banner-wrapper { padding: 15px; }
-        .banner { background: linear-gradient(135deg, #2563eb, #6366f1); border-radius: 18px; padding: 20px; text-align: center; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25); }
-        .banner h3 { margin: 0 0 5px 0; font-size: 18px; }
-        .banner p { margin: 0; font-size: 13px; opacity: 0.85; }
+        .banner-wrapper { padding: 12px 15px; }
+        .banner { background: linear-gradient(135deg, #1d4ed8, #4f46e5); border-radius: 16px; padding: 16px; text-align: center; }
+        .banner h3 { margin: 0 0 4px 0; font-size: 17px; }
+        .banner p { margin: 0; font-size: 12px; opacity: 0.85; }
 
-        .search-area { padding: 0 15px; margin-bottom: 12px; }
-        .search-input { width: 100%; background: var(--card-bg); border: 1px solid var(--border); padding: 12px 16px; border-radius: 12px; color: #fff; font-size: 14px; outline: none; }
+        .search-area { padding: 0 15px; margin-bottom: 10px; }
+        .search-input { width: 100%; background: var(--card-bg); border: 1px solid var(--border); padding: 10px 14px; border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
         
-        .categories { display: flex; gap: 8px; overflow-x: auto; padding: 0 15px 15px 15px; scrollbar-width: none; }
-        .chip { background: var(--card-bg); border: 1px solid var(--border); padding: 7px 18px; border-radius: 20px; font-size: 13px; white-space: nowrap; color: var(--text-sub); cursor: pointer; }
-        .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: bold; }
+        .categories { display: flex; gap: 8px; overflow-x: auto; padding: 0 15px 12px 15px; scrollbar-width: none; }
+        .chip { background: var(--card-bg); border: 1px solid var(--border); padding: 6px 14px; border-radius: 18px; font-size: 12px; color: var(--text-sub); cursor: pointer; white-space: nowrap; }
+        .chip.active { background: var(--accent); color: #fff; font-weight: bold; border-color: var(--accent); }
 
-        .section-title { padding: 0 15px; font-size: 16px; font-weight: bold; margin-bottom: 12px; }
-        .apps-list { padding: 0 15px; display: flex; flex-direction: column; gap: 10px; }
+        .section-title { padding: 0 15px; font-size: 15px; font-weight: bold; margin-bottom: 10px; }
+        .apps-list { padding: 0 15px; display: flex; flex-direction: column; gap: 8px; }
         
-        .app-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 12px; display: flex; align-items: center; justify-content: space-between; }
-        .app-main { display: flex; align-items: center; gap: 12px; cursor: pointer; flex-grow: 1; overflow: hidden; padding-left: 10px; }
-        .app-icon { width: 52px; height: 52px; border-radius: 12px; object-fit: cover; background: #1e293b; flex-shrink: 0; }
-        .app-title { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .app-sub { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
-        .app-note { font-size: 11px; color: #38bdf8; margin-top: 3px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .app-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; }
+        .app-main { display: flex; align-items: center; gap: 10px; cursor: pointer; flex: 1; min-width: 0; padding-left: 8px; }
+        .app-icon { width: 48px; height: 48px; border-radius: 10px; background: #1e293b; object-fit: cover; flex-shrink: 0; }
+        .app-info { display: flex; flex-direction: column; min-width: 0; }
+        .app-title { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .app-sub { font-size: 11px; color: var(--text-sub); margin-top: 1px; }
+        .app-note { font-size: 11px; color: #38bdf8; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .btn-get { background: rgba(37, 99, 235, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); padding: 7px 18px; border-radius: 20px; font-weight: bold; font-size: 13px; text-decoration: none; flex-shrink: 0; }
+        .btn-get { background: rgba(37, 99, 235, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 6px 14px; border-radius: 16px; font-weight: bold; font-size: 12px; text-decoration: none; flex-shrink: 0; }
 
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 100; align-items: flex-end; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: flex-end; }
         .modal.active { display: flex; }
-        .modal-content { background: var(--card-bg); border-top-left-radius: 24px; border-top-right-radius: 24px; width: 100%; padding: 25px; border-top: 1px solid var(--border); max-height: 80vh; overflow-y: auto; position: relative; }
-        .close-btn { background: #1e293b; color: #fff; border: none; width: 30px; height: 30px; border-radius: 50%; position: absolute; left: 20px; top: 20px; font-weight: bold; }
+        .modal-content { background: var(--card-bg); border-top-left-radius: 20px; border-top-right-radius: 20px; width: 100%; padding: 20px; border-top: 1px solid var(--border); max-height: 75vh; overflow-y: auto; position: relative; }
+        .close-btn { background: #1e293b; color: #fff; border: none; width: 28px; height: 28px; border-radius: 50%; position: absolute; left: 15px; top: 15px; font-weight: bold; }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(19, 27, 46, 0.95); backdrop-filter: blur(16px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0 14px 0; z-index: 90; }
-        .nav-item { color: var(--text-sub); text-decoration: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #111726; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 0 12px 0; z-index: 90; }
+        .nav-item { color: var(--text-sub); text-decoration: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
         .nav-item.active { color: #60a5fa; font-weight: bold; }
     </style>
 </head>
@@ -56,25 +57,25 @@
     <div class="banner-wrapper">
         <div class="banner">
             <h3>متجر idk Plus</h3>
-            <p>سورس شامل للتطبيقات والألعاب المعدلة</p>
+            <p>سورس للتطبيقات والألعاب المعدلة</p>
         </div>
     </div>
 
     <div class="search-area">
-        <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن التطبيقات، الألعاب، الملاحظات..." oninput="searchApps()">
+        <input type="text" id="searchInput" class="search-input" placeholder="بحث خفيف وسريع..." oninput="onSearch()">
     </div>
 
     <div class="categories">
-        <div class="chip active" onclick="switchCategory('all', this)">الكل</div>
-        <div class="chip" onclick="switchCategory('plus', this)">تطبيقات بلس</div>
-        <div class="chip" onclick="switchCategory('games', this)">الألعاب</div>
-        <div class="chip" onclick="switchCategory('tools', this)">الأدوات والجيلبريك</div>
+        <div class="chip active" onclick="setCategory('all', this)">الكل</div>
+        <div class="chip" onclick="setCategory('plus', this)">تطبيقات بلس</div>
+        <div class="chip" onclick="setCategory('games', this)">الألعاب</div>
+        <div class="chip" onclick="setCategory('tools', this)">الأدوات</div>
     </div>
 
     <div class="section-title" id="sectionTitle">التطبيقات المتاحة</div>
 
     <div id="appsContainer" class="apps-list">
-        <div style="text-align:center; color:var(--text-sub); padding:30px;">جاري تحميل السورس وقراءة الملاحظات...</div>
+        <div style="text-align:center; color:var(--text-sub); padding:20px;">جاري تحميل البيانات...</div>
     </div>
 
     <div id="appModal" class="modal" onclick="closeModal(event)">
@@ -85,101 +86,102 @@
     </div>
 
     <nav class="bottom-nav">
-        <div class="nav-item active" id="navHome" onclick="switchCategory('all', null, 'navHome')">
-            <span style="font-size:18px;">📱</span> الرئيسية
+        <div class="nav-item active" id="navHome" onclick="setCategory('all', null, 'navHome')">
+            <span>📱</span> الرئيسية
         </div>
-        <div class="nav-item" id="navGames" onclick="switchCategory('games', null, 'navGames')">
-            <span style="font-size:18px;">🎮</span> الألعاب
+        <div class="nav-item" id="navGames" onclick="setCategory('games', null, 'navGames')">
+            <span>🎮</span> الألعاب
         </div>
-        <div class="nav-item" id="navTools" onclick="switchCategory('tools', null, 'navTools')">
-            <span style="font-size:18px;">⚙️</span> الأدوات
+        <div class="nav-item" id="navTools" onclick="setCategory('tools', null, 'navTools')">
+            <span>⚙️</span> الأدوات
         </div>
     </nav>
 
     <script>
         let rawData = [];
-        let currentFilter = 'all';
+        let searchTimer = null;
 
+        // تحميل البيانات مرة واحدة فقط لتسريع الأداء
         fetch('IPA-AR.json')
-            .then(res => res.json())
+            .then(r => r.json())
             .then(data => {
                 rawData = Array.isArray(data) ? data : (data.apps || data.items || []);
                 renderStore(rawData);
             })
             .catch(() => {
-                document.getElementById('appsContainer').innerHTML = '<div style="text-align:center; color:#ef4444;">حدث خطأ أثناء تحميل ملف JSON</div>';
+                document.getElementById('appsContainer').innerHTML = '<div style="text-align:center; color:#ef4444;">خطأ في قراءة ملف JSON</div>';
             });
 
+        // طريقة خفيفة ومحسنة لرسم القائمة بدون بطء
         function renderStore(list) {
             const container = document.getElementById('appsContainer');
             container.innerHTML = '';
 
-            if (!list.length) {
-                container.innerHTML = '<div style="text-align:center; color:var(--text-sub); padding:20px;">لا توجد نتائج مطابقة</div>';
+            if (!list || !list.length) {
+                container.innerHTML = '<div style="text-align:center; color:var(--text-sub); padding:15px;">لا توجد تطبيقات</div>';
                 return;
             }
 
-            list.forEach((app, idx) => {
+            const fragment = document.createDocumentFragment();
+
+            list.forEach((app) => {
                 const name = app.name || app.title || 'تطبيق';
                 const icon = app.iconURL || app.icon || app.icon_url || '';
                 const version = app.version || app.ver || '1.0';
                 const url = app.downloadURL || app.get || app.url || app.link || '';
-                
-                // جلب الملاحظات والوصف من السورس
-                const note = app.subtitle || app.caption || app.description || app.note || app.info || '';
+                const note = app.subtitle || app.caption || app.description || app.note || '';
 
                 if (!url) return;
 
                 const installLink = url.startsWith('itms-services') ? url : `itms-services://?action=download-manifest&url=${url}`;
 
-                container.innerHTML += `
-                    <div class="app-item">
-                        <div class="app-main" onclick="openDetails('${name}')">
-                            <img class="app-icon" src="${icon}" onerror="this.src='https://via.placeholder.com/52/1e293b/ffffff?text=App'">
-                            <div style="overflow:hidden;">
-                                <div class="app-title">${name}</div>
-                                <div class="app-sub">إصدار ${version}</div>
-                                ${note ? `<div class="app-note">💡 ${note}</div>` : ''}
-                            </div>
+                const item = document.createElement('div');
+                item.className = 'app-item';
+                item.innerHTML = `
+                    <div class="app-main">
+                        <img class="app-icon" src="${icon}" onerror="this.src='https://via.placeholder.com/48/1e293b/ffffff?text=App'">
+                        <div class="app-info">
+                            <div class="app-title">${name}</div>
+                            <div class="app-sub">إصدار ${version}</div>
+                            ${note ? `<div class="app-note">💡 ${note}</div>` : ''}
                         </div>
-                        <a class="btn-get" href="${installLink}">تثبيت</a>
                     </div>
+                    <a class="btn-get" href="${installLink}">تثبيت</a>
                 `;
+
+                // فتح النافذة عند الضغط على اسم التطبيق
+                item.querySelector('.app-main').onclick = () => openDetails(app, installLink);
+                fragment.appendChild(item);
             });
+
+            container.appendChild(fragment);
         }
 
-        function openDetails(appName) {
-            const app = rawData.find(a => (a.name || a.title) === appName);
-            if (!app) return;
-
-            const url = app.downloadURL || app.get || app.url || app.link || '';
-            const installLink = url.startsWith('itms-services') ? url : `itms-services://?action=download-manifest&url=${url}`;
-            const note = app.subtitle || app.caption || app.description || app.note || app.info || 'لا توجد ملاحظات إضافية لهذا التطبيق.';
+        function openDetails(app, installLink) {
+            const note = app.subtitle || app.caption || app.description || app.note || 'لا توجد ملاحظات إضافية لهذا التطبيق.';
 
             document.getElementById('modalBody').innerHTML = `
-                <div style="display:flex; gap:15px; align-items:center; margin-bottom:15px;">
-                    <img src="${app.iconURL || app.icon || ''}" style="width:65px; height:65px; border-radius:14px;" onerror="this.src='https://via.placeholder.com/65/1e293b/ffffff?text=App'">
+                <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
+                    <img src="${app.iconURL || app.icon || ''}" style="width:58px; height:58px; border-radius:12px;" onerror="this.src='https://via.placeholder.com/58/1e293b/ffffff?text=App'">
                     <div>
-                        <h3 style="margin:0; font-size:17px; color:#fff;">${app.name || app.title}</h3>
+                        <h3 style="margin:0; font-size:16px;">${app.name || app.title}</h3>
                         <span style="color:var(--text-sub); font-size:12px;">الإصدار: ${app.version || '1.0'}</span>
                     </div>
                 </div>
-                <div style="background:rgba(255,255,255,0.04); padding:12px; border-radius:10px; font-size:13px; color:#cbd5e1; line-height:1.6; margin-bottom:20px; border:1px solid var(--border);">
-                    <strong style="color:#60a5fa; display:block; margin-bottom:4px;">تفاصيل وملاحظات:</strong>
+                <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px; font-size:12px; color:#cbd5e1; line-height:1.5; margin-bottom:15px; border:1px solid var(--border);">
+                    <strong style="color:#60a5fa; display:block; margin-bottom:3px;">الملاحظات والوصف:</strong>
                     ${note}
                 </div>
-                <a class="btn-get" style="display:block; text-align:center; padding:12px; font-size:14px;" href="${installLink}">تثبيت التطبيق الآن</a>
+                <a class="btn-get" style="display:block; text-align:center; padding:10px; font-size:13px;" href="${installLink}">تثبيت الآن</a>
             `;
             document.getElementById('appModal').classList.add('active');
         }
 
-        function closeModal(e) {
+        function closeModal() {
             document.getElementById('appModal').classList.remove('active');
         }
 
-        function switchCategory(type, element, navId) {
-            currentFilter = type;
-
+        function setCategory(type, element, navId) {
             if (element) {
                 document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
                 element.classList.add('active');
@@ -200,16 +202,16 @@
                     return str.includes('game') || str.includes('hack') || str.includes('clash') || str.includes('pubg') || str.includes('gta') || str.includes('لعبة');
                 });
             } else if (type === 'plus') {
-                titleEl.innerText = 'تطبيقات البلس والشبكات';
+                titleEl.innerText = 'تطبيقات البلس';
                 filtered = rawData.filter(a => {
                     const str = ((a.name || '') + (a.subtitle || '')).toLowerCase();
-                    return str.includes('plus') || str.includes('gold') || str.includes('dark') || str.includes('root') || str.includes('instagram') || str.includes('telegram');
+                    return str.includes('plus') || str.includes('gold') || str.includes('dark') || str.includes('instagram') || str.includes('telegram');
                 });
             } else if (type === 'tools') {
                 titleEl.innerText = 'الأدوات والجيلبريك';
                 filtered = rawData.filter(a => {
                     const str = ((a.name || '') + (a.subtitle || '')).toLowerCase();
-                    return str.includes('jailbreak') || str.includes('tool') || str.includes('root') || str.includes('boost') || str.includes('booster');
+                    return str.includes('jailbreak') || str.includes('tool') || str.includes('root') || str.includes('boost');
                 });
             } else {
                 titleEl.innerText = 'التطبيقات المتاحة';
@@ -218,14 +220,22 @@
             renderStore(filtered);
         }
 
-        function searchApps() {
-            const q = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = rawData.filter(a => {
-                const name = (a.name || a.title || '').toLowerCase();
-                const note = (a.subtitle || a.caption || a.description || a.note || '').toLowerCase();
-                return name.includes(q) || note.includes(q);
-            });
-            renderStore(filtered);
+        // تحسين البحث عبر التأخير لمنع التعليق عند الكتابة السريعة
+        function onSearch() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                const q = document.getElementById('searchInput').value.toLowerCase().trim();
+                if (!q) {
+                    renderStore(rawData);
+                    return;
+                }
+                const filtered = rawData.filter(a => {
+                    const name = (a.name || a.title || '').toLowerCase();
+                    const note = (a.subtitle || a.caption || a.description || a.note || '').toLowerCase();
+                    return name.includes(q) || note.includes(q);
+                });
+                renderStore(filtered);
+            }, 150);
         }
     </script>
 </body>
