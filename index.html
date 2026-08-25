@@ -28,6 +28,7 @@
         .search-btn { background: var(--accent); color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; }
 
         .categories { display: flex; gap: 8px; overflow-x: auto; padding: 0 15px 12px 15px; scrollbar-width: none; }
+        .categories::-webkit-scrollbar { display: none; }
         .chip { background: var(--card-bg); border: 1px solid var(--border); padding: 7px 16px; border-radius: 20px; font-size: 12.5px; color: var(--text-sub); cursor: pointer; white-space: nowrap; transition: 0.2s; }
         .chip.active { background: var(--accent); color: #fff; font-weight: bold; border-color: var(--accent); }
 
@@ -53,7 +54,7 @@
         .close-btn { background: #1e293b; color: #fff; border: none; width: 30px; height: 30px; border-radius: 50%; position: absolute; left: 15px; top: 15px; font-weight: bold; cursor: pointer; }
 
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(19, 27, 46, 0.96); backdrop-filter: blur(12px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 0 12px 0; z-index: 90; }
-        .nav-item { color: var(--text-sub); text-decoration: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; width: 25%; }
+        .nav-item { color: var(--text-sub); text-decoration: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; width: 20%; }
         .nav-item.active { color: #60a5fa; font-weight: bold; }
     </style>
 </head>
@@ -77,6 +78,7 @@
         <div class="chip active" id="chip-all" onclick="filterCategory('all')">الكل</div>
         <div class="chip" id="chip-games" onclick="filterCategory('games')">🎮 الألعاب</div>
         <div class="chip" id="chip-plus" onclick="filterCategory('plus')">⭐ تطبيقات بلس</div>
+        <div class="chip" id="chip-design" onclick="filterCategory('design')">🎨 التصميم والمونتاج</div>
         <div class="chip" id="chip-tools" onclick="filterCategory('tools')">⚙️ الأدوات والجيلبريك</div>
     </div>
 
@@ -106,6 +108,9 @@
         <div class="nav-item" id="navPlus" onclick="filterCategory('plus')">
             <span style="font-size:16px;">⭐</span> البلس
         </div>
+        <div class="nav-item" id="navDesign" onclick="filterCategory('design')">
+            <span style="font-size:16px;">🎨</span> التصميم
+        </div>
         <div class="nav-item" id="navTools" onclick="filterCategory('tools')">
             <span style="font-size:16px;">⚙️</span> الأدوات
         </div>
@@ -116,35 +121,37 @@
         let currentFilter = 'all';
 
         const GAME_KEYWORDS = ['game', 'hack', 'pubg', '8ball', 'pool', 'clash', 'royale', 'duty', 'cod', 'gta', 'free fire', 'subway', 'car', 'ball', 'لعبة', 'العاب'];
+        const DESIGN_KEYWORDS = ['videostar', 'video star', 'alight motion', 'alightmotion', 'picsart', 'capcut', 'photoshop', 'تصميم', 'مونتاج'];
         const TOOL_KEYWORDS = ['jailbreak', 'root', 'boost', 'booster', 'gearup', 'tool', 'tweak', 'filza', 'uncover', 'dopamine', 'trollstore', 'أداة', 'جيلبريك'];
 
-        // جلب البيانات من jom 2.json بشكل مباشر وآمن
-        fetch(encodeURIComponent('jom 2.json'))
-            .then(res => {
-                if (!res.ok) throw new Error('Network error');
-                return res.json();
-            })
-            .then(data => {
-                rawData = Array.isArray(data) ? data : (data.apps || data.items || []);
-                filterCategory('all');
-            })
-            .catch(() => {
-                // تجربة جلب اسم الملف البديل في حال تم تغييره مستقبلاً
-                fetch('IPA-AR.json')
-                    .then(r => r.json())
-                    .then(data => {
+        async function loadData() {
+            const files = ['jom 2.json', 'IPA-AR.json'];
+            for (let file of files) {
+                try {
+                    let res = await fetch(encodeURIComponent(file));
+                    if (!res.ok) res = await fetch(file);
+                    if (res.ok) {
+                        let data = await res.json();
                         rawData = Array.isArray(data) ? data : (data.apps || data.items || []);
                         filterCategory('all');
-                    })
-                    .catch(() => {
-                        document.getElementById('appsContainer').innerHTML = '<div style="text-align:center; color:#ef4444; padding:20px;">خطأ في تحميل ملف JSON</div>';
-                    });
-            });
+                        return;
+                    }
+                } catch (e) {}
+            }
+            document.getElementById('appsContainer').innerHTML = '<div style="text-align:center; color:#ef4444; padding:20px;">خطأ في تحميل ملف JSON</div>';
+        }
+
+        loadData();
 
         function isGame(app) {
             const str = ((app.name || '') + ' ' + (app.subtitle || '') + ' ' + (app.category || '')).toLowerCase();
-            if (str.includes('videostar') || str.includes('alight motion')) return false;
+            if (isDesign(app)) return false;
             return GAME_KEYWORDS.some(k => str.includes(k));
+        }
+
+        function isDesign(app) {
+            const str = ((app.name || '') + ' ' + (app.subtitle || '') + ' ' + (app.category || '')).toLowerCase();
+            return DESIGN_KEYWORDS.some(k => str.includes(k));
         }
 
         function isTool(app) {
@@ -161,7 +168,7 @@
             if (activeChip) activeChip.classList.add('active');
 
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            const navMap = { 'all': 'navHome', 'games': 'navGames', 'plus': 'navPlus', 'tools': 'navTools' };
+            const navMap = { 'all': 'navHome', 'games': 'navGames', 'plus': 'navPlus', 'design': 'navDesign', 'tools': 'navTools' };
             if (navMap[type]) document.getElementById(navMap[type]).classList.add('active');
 
             const titleEl = document.getElementById('sectionTitle');
@@ -170,12 +177,15 @@
             if (type === 'games') {
                 titleEl.innerText = 'قسم الألعاب';
                 filtered = rawData.filter(app => isGame(app));
+            } else if (type === 'design') {
+                titleEl.innerText = 'التصميم والمونتاج';
+                filtered = rawData.filter(app => isDesign(app));
             } else if (type === 'tools') {
                 titleEl.innerText = 'الأدوات والجيلبريك';
                 filtered = rawData.filter(app => isTool(app));
             } else if (type === 'plus') {
                 titleEl.innerText = 'تطبيقات البلس والشبكات';
-                filtered = rawData.filter(app => !isGame(app) && !isTool(app));
+                filtered = rawData.filter(app => !isGame(app) && !isDesign(app) && !isTool(app));
             } else {
                 titleEl.innerText = 'التطبيقات المتاحة';
                 filtered = rawData;
