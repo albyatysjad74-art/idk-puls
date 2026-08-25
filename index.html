@@ -2,208 +2,181 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>idk Plus Store</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>idk Store</title>
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --accent-color: #3b82f6;
-            --text-color: #f8fafc;
-            --text-dim: #94a3b8;
+            --bg: #090d16;
+            --card-bg: #131b2e;
+            --accent: #3b82f6;
+            --text-main: #f8fafc;
+            --text-sub: #64748b;
+            --border: rgba(255, 255, 255, 0.08);
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding-bottom: 80px; }
 
-        header {
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
+        /* Banner Carousel */
+        .banner-wrapper { padding: 15px; }
+        .banner { background: linear-gradient(135deg, #2563eb, #7c3aed); border-radius: 18px; padding: 20px; text-align: center; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3); }
+        .banner h3 { margin: 0 0 5px 0; font-size: 18px; }
+        .banner p { margin: 0; font-size: 13px; opacity: 0.8; }
 
-        h1 {
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #60a5fa, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        /* Search & Filter Bar */
+        .search-area { padding: 0 15px; margin-bottom: 15px; }
+        .search-input { width: 100%; background: var(--card-bg); border: 1px solid var(--border); padding: 12px 16px; border-radius: 12px; color: #fff; font-size: 14px; outline: none; }
+        
+        .categories { display: flex; gap: 8px; overflow-x: auto; padding: 0 15px 15px 15px; }
+        .chip { background: var(--card-bg); border: 1px solid var(--border); padding: 6px 16px; border-radius: 20px; font-size: 13px; white-space: nowrap; color: var(--text-sub); }
+        .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: bold; }
 
-        .search-box {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(15, 23, 42, 0.8);
-            color: #fff;
-            font-size: 15px;
-            outline: none;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
+        /* Apps Grid */
+        .section-title { padding: 0 15px; font-size: 16px; font-weight: bold; margin-bottom: 10px; }
+        .apps-list { padding: 0 15px; display: flex; flex-direction: column; gap: 10px; }
+        
+        .app-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 12px; display: flex; align-items: center; justify-content: space-between; }
+        .app-main { display: flex; align-items: center; gap: 12px; cursor: pointer; flex-grow: 1; }
+        .app-icon { width: 52px; height: 52px; border-radius: 12px; object-fit: cover; background: #1e293b; }
+        .app-title { font-size: 15px; font-weight: 700; }
+        .app-sub { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+        
+        .btn-get { background: rgba(59, 130, 246, 0.15); color: var(--accent); border: none; padding: 6px 16px; border-radius: 20px; font-weight: bold; font-size: 13px; text-decoration: none; }
 
-        .search-box:focus {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
-        }
+        /* Modal Details */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 100; align-items: flex-end; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--card-bg); border-top-left-radius: 24px; border-top-right-radius: 24px; width: 100%; padding: 25px; border-top: 1px solid var(--border); max-height: 80vh; overflow-y: auto; }
+        .close-btn { background: #1e293b; color: #fff; border: none; width: 30px; height: 30px; border-radius: 50%; float: left; }
 
-        #apps-container {
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .app-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease;
-        }
-
-        .app-card:active {
-            transform: scale(0.98);
-        }
-
-        .app-info {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .app-icon {
-            width: 54px;
-            height: 54px;
-            border-radius: 12px;
-            object-fit: cover;
-            background: #1e293b;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .app-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .app-name {
-            font-weight: 700;
-            font-size: 15px;
-            color: var(--text-color);
-        }
-
-        .app-version {
-            font-size: 12px;
-            color: var(--text-dim);
-            margin-top: 3px;
-        }
-
-        .btn-install {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            color: #ffffff;
-            text-decoration: none;
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 700;
-            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.3);
-        }
-
-        .status-msg {
-            text-align: center;
-            color: var(--text-dim);
-            margin-top: 40px;
-            font-size: 14px;
-        }
+        /* Bottom Nav Bar */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(19, 27, 46, 0.9); backdrop-filter: blur(12px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px 0; z-index: 90; }
+        .nav-item { color: var(--text-sub); text-decoration: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: var(--accent); font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>متجر بلس</h1>
-        <input type="text" id="search" class="search-box" placeholder="بحث عن تطبيق..." onkeyup="filterApps()">
-    </header>
-
-    <div id="apps-container">
-        <div class="status-msg">جاري جلب التطبيقات من السورس...</div>
+    <!-- Header Banner -->
+    <div class="banner-wrapper">
+        <div class="banner">
+            <h3>متجر idk Plus الأصلي</h3>
+            <p>تطبيقات بلس وألعاب معدلة بدون جيلبريك</p>
+        </div>
     </div>
 
+    <!-- Search & Categories -->
+    <div class="search-area">
+        <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن التطبيقات والألعاب..." oninput="searchApps()">
+    </div>
+
+    <div class="categories">
+        <div class="chip active" onclick="filterCat('all', this)">الكل</div>
+        <div class="chip" onclick="filterCat('plus', this)">تطبيقات بلس</div>
+        <div class="chip" onclick="filterCat('games', this)">الألعاب</div>
+    </div>
+
+    <div class="section-title">التطبيقات المتاحة</div>
+
+    <!-- App Container -->
+    <div id="appsContainer" class="apps-list">
+        <div style="text-align:center; color:var(--text-sub); padding:20px;">جاري تحميل بيانات المتجر...</div>
+    </div>
+
+    <!-- Details Modal -->
+    <div id="appModal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closeModal()">✕</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active"><span>📱</span> الرئيسية</a>
+        <a href="#" class="nav-item"><span>🎮</span> الألعاب</a>
+        <a href="#" class="nav-item"><span>⚙️</span> الأدوات</a>
+    </nav>
+
     <script>
-        let allApps = [];
+        let rawData = [];
 
         fetch('IPA-AR.json')
             .then(res => res.json())
             .then(data => {
-                allApps = Array.isArray(data) ? data : (data.apps || data.items || []);
-                renderApps(allApps);
+                rawData = Array.isArray(data) ? data : (data.apps || data.items || []);
+                renderStore(rawData);
             })
-            .catch(err => {
-                document.getElementById('apps-container').innerHTML = '<div class="status-msg">فشل تحميل السورس. تأكد من وجود ملف IPA-AR.json</div>';
+            .catch(() => {
+                document.getElementById('appsContainer').innerHTML = '<div style="text-align:center; color:red;">خطأ في تحميل بيانات السورس</div>';
             });
 
-        function renderApps(apps) {
-            const container = document.getElementById('apps-container');
+        function renderStore(list) {
+            const container = document.getElementById('appsContainer');
             container.innerHTML = '';
 
-            if (apps.length === 0) {
-                container.innerHTML = '<div class="status-msg">لم يتم العثور على نتائج</div>';
-                return;
-            }
+            list.forEach((app, idx) => {
+                const name = app.name || 'تطبيق';
+                const icon = app.iconURL || app.icon || '';
+                const version = app.version || 'v1.0';
+                const url = app.downloadURL || app.get || app.url || '';
 
-            apps.forEach(app => {
-                const name = app.name || app.title || 'تطبيق';
-                const icon = app.iconURL || app.icon || app.icon_url || '';
-                const url = app.downloadURL || app.get || app.url || app.link || '';
-                const version = app.version || app.ver || 'v1.0';
+                if(!url) return;
 
-                if (!url) return;
-
-                const installLink = url.startsWith('itms-services') 
-                    ? url 
-                    : `itms-services://?action=download-manifest&url=${url}`;
+                const installLink = url.startsWith('itms-services') ? url : `itms-services://?action=download-manifest&url=${url}`;
 
                 container.innerHTML += `
-                    <div class="app-card">
-                        <div class="app-info">
-                            <img class="app-icon" src="${icon}" onerror="this.src='https://via.placeholder.com/54/1e293b/ffffff?text=App'">
-                            <div class="app-details">
-                                <span class="app-name">${name}</span>
-                                <span class="app-version">${version}</span>
+                    <div class="app-item">
+                        <div class="app-main" onclick="openDetails(${idx})">
+                            <img class="app-icon" src="${icon}" onerror="this.src='https://via.placeholder.com/52'">
+                            <div>
+                                <div class="app-title">${name}</div>
+                                <div class="app-sub">إصدار ${version}</div>
                             </div>
                         </div>
-                        <a class="btn-install" href="${installLink}">تثبيت</a>
+                        <a class="btn-get" href="${installLink}">تثبيت</a>
                     </div>
                 `;
             });
         }
 
-        function filterApps() {
-            const query = document.getElementById('search').value.toLowerCase();
-            const filtered = allApps.filter(app => {
-                const name = (app.name || app.title || '').toLowerCase();
-                return name.includes(query);
-            });
-            renderApps(filtered);
+        function openDetails(index) {
+            const app = rawData[index];
+            const url = app.downloadURL || app.get || app.url || '';
+            const installLink = url.startsWith('itms-services') ? url : `itms-services://?action=download-manifest&url=${url}`;
+
+            document.getElementById('modalBody').innerHTML = `
+                <div style="display:flex; gap:15px; align-items:center; margin-bottom:20px;">
+                    <img src="${app.iconURL || app.icon || ''}" style="width:70px; height:70px; border-radius:16px;">
+                    <div>
+                        <h2 style="margin:0; font-size:18px;">${app.name}</h2>
+                        <span style="color:var(--text-sub); font-size:13px;">الإصدار: ${app.version || '1.0'}</span>
+                    </div>
+                </div>
+                <p style="color:var(--text-sub); font-size:14px; line-height:1.5;">${app.description || 'تطبيق معدل متاح للتثبيت المباشر على أجهزة الآيفون والآيباد بدون جيلبريك.'}</p>
+                <a class="btn-get" style="display:block; text-align:center; padding:12px; margin-top:20px;" href="${installLink}">تثبيت التطبيق الآن</a>
+            `;
+            document.getElementById('appModal').classList.add('active');
+        }
+
+        function closeModal(e) {
+            document.getElementById('appModal').classList.remove('active');
+        }
+
+        function searchApps() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = rawData.filter(a => (a.name || '').toLowerCase().includes(q));
+            renderStore(filtered);
+        }
+
+        function filterCat(cat, el) {
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            if(cat === 'all') renderStore(rawData);
+            else {
+                const filtered = rawData.filter(a => (a.name || '').toLowerCase().includes(cat === 'plus' ? 'plus' : 'game'));
+                renderStore(filtered);
+            }
         }
     </script>
 </body>
