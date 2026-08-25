@@ -1,33 +1,60 @@
-fetch('IPA-AR.json')
-    .then(res => res.json())
-    .then(data => {
-        const container = document.getElementById('apps');
-        container.innerHTML = '';
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر البلس</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; background: #0f172a; color: white; padding: 15px; margin: 0; }
+        h2 { text-align: center; margin-bottom: 20px; }
+        .app-card { background: #1e293b; padding: 12px; border-radius: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+        .app-info { display: flex; align-items: center; gap: 12px; }
+        .app-icon { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; background: #334155; }
+        .app-name { font-weight: bold; font-size: 15px; }
+        .btn-install { background: #2563eb; color: white; text-decoration: none; padding: 6px 14px; border-radius: 8px; font-size: 14px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>تطبيقات المتجر</h2>
+    <div id="apps">جاري التحميل...</div>
 
-        // التعامل مع اختلاف ترتيب ملفات الـ JSON
-        const list = Array.isArray(data) ? data : (data.apps || data.items || []);
+    <script>
+        // رابط الـ RAW المباشر لملف الـ JSON الخاص بك
+        const jsonUrl = 'https://raw.githubusercontent.com/albyatysjad74-art/idk-puls/main/IPA-AR.json';
 
-        list.forEach(app => {
-            const name = app.name || app.title || 'تطبيق';
-            const icon = app.iconURL || app.icon || app.icon_url || '';
-            const url = app.downloadURL || app.get || app.url || app.link || '';
+        fetch(jsonUrl)
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById('apps');
+                container.innerHTML = '';
+                
+                const list = Array.isArray(data) ? data : (data.apps || data.items || []);
 
-            if (!url) return;
+                list.forEach(app => {
+                    const name = app.name || app.title || 'تطبيق';
+                    const icon = app.iconURL || app.icon || app.icon_url || '';
+                    const url = app.downloadURL || app.get || app.url || app.link || '';
+                    
+                    if (!url) return;
 
-            const installLink = url.startsWith('itms-services') 
-                ? url 
-                : `itms-services://?action=download-manifest&url=${url}`;
+                    const installLink = url.startsWith('itms-services') 
+                        ? url 
+                        : `itms-services://?action=download-manifest&url=${url}`;
 
-            container.innerHTML += `
-                <div class="app-card">
-                    <div class="app-info">
-                        <img class="app-icon" src="${icon}" onerror="this.style.display='none'">
-                        <div class="app-name">${name}</div>
-                    </div>
-                    <a class="btn-install" href="${installLink}">تثبيت</a>
-                </div>`;
-        });
-    })
-    .catch(err => {
-        document.getElementById('apps').innerText = 'حدث خطأ في تحميل السورس: ' + err;
-    });
+                    container.innerHTML += `
+                        <div class="app-card">
+                            <div class="app-info">
+                                <img class="app-icon" src="${icon}" onerror="this.style.display='none'">
+                                <div class="app-name">${name}</div>
+                            </div>
+                            <a class="btn-install" href="${installLink}">تثبيت</a>
+                        </div>`;
+                });
+            })
+            .catch(err => {
+                document.getElementById('apps').innerText = 'خطأ في تحميل السورس';
+                console.error(err);
+            });
+    </script>
+</body>
+</html>
