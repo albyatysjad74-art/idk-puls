@@ -115,23 +115,34 @@
         let rawData = [];
         let currentFilter = 'all';
 
-        // الكلمات المفتاحية لتصنيف دقيق بدون تداخل
         const GAME_KEYWORDS = ['game', 'hack', 'pubg', '8ball', 'pool', 'clash', 'royale', 'duty', 'cod', 'gta', 'free fire', 'subway', 'car', 'ball', 'لعبة', 'العاب'];
         const TOOL_KEYWORDS = ['jailbreak', 'root', 'boost', 'booster', 'gearup', 'tool', 'tweak', 'filza', 'uncover', 'dopamine', 'trollstore', 'أداة', 'جيلبريك'];
 
-        fetch('IPA-AR.json')
-            .then(res => res.json())
+        // جلب البيانات من jom 2.json بشكل مباشر وآمن
+        fetch(encodeURIComponent('jom 2.json'))
+            .then(res => {
+                if (!res.ok) throw new Error('Network error');
+                return res.json();
+            })
             .then(data => {
                 rawData = Array.isArray(data) ? data : (data.apps || data.items || []);
                 filterCategory('all');
             })
             .catch(() => {
-                document.getElementById('appsContainer').innerHTML = '<div style="text-align:center; color:#ef4444; padding:20px;">خطأ في تحميل ملف JSON</div>';
+                // تجربة جلب اسم الملف البديل في حال تم تغييره مستقبلاً
+                fetch('IPA-AR.json')
+                    .then(r => r.json())
+                    .then(data => {
+                        rawData = Array.isArray(data) ? data : (data.apps || data.items || []);
+                        filterCategory('all');
+                    })
+                    .catch(() => {
+                        document.getElementById('appsContainer').innerHTML = '<div style="text-align:center; color:#ef4444; padding:20px;">خطأ في تحميل ملف JSON</div>';
+                    });
             });
 
         function isGame(app) {
             const str = ((app.name || '') + ' ' + (app.subtitle || '') + ' ' + (app.category || '')).toLowerCase();
-            // استبعاد أداة التصميم أو البرامج التي توهم النظام بأنها لعبة
             if (str.includes('videostar') || str.includes('alight motion')) return false;
             return GAME_KEYWORDS.some(k => str.includes(k));
         }
@@ -145,12 +156,10 @@
             currentFilter = type;
             document.getElementById('searchInput').value = '';
 
-            // تحديث الشريحة النشطة (Upper Chips)
             document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
             const activeChip = document.getElementById(`chip-${type}`);
             if (activeChip) activeChip.classList.add('active');
 
-            // تحديث الشريط السفلي (Bottom Nav)
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             const navMap = { 'all': 'navHome', 'games': 'navGames', 'plus': 'navPlus', 'tools': 'navTools' };
             if (navMap[type]) document.getElementById(navMap[type]).classList.add('active');
@@ -186,7 +195,6 @@
 
             titleEl.innerText = `نتائج البحث عن: "${query}"`;
             
-            // البحث داخل جميع البيانات بغض النظر عن الفلتر الحالي
             const filtered = rawData.filter(app => {
                 const name = (app.name || app.title || '').toLowerCase();
                 const note = (app.subtitle || app.caption || app.description || app.note || '').toLowerCase();
@@ -262,7 +270,7 @@
             document.getElementById('appModal').classList.add('active');
         }
 
-        function closeModal(e) {
+        function closeModal() {
             document.getElementById('appModal').classList.remove('active');
         }
     </script>
