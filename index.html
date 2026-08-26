@@ -25,7 +25,7 @@
         .search-area { padding: 0 15px; margin-bottom: 12px; }
         .search-box { display: flex; align-items: center; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px 6px 4px 14px; }
         .search-input { flex: 1; background: transparent; border: none; color: #fff; font-size: 13.5px; outline: none; padding: 8px 0; }
-        .search-btn { background: var(--accent); color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+        .search-btn { background: var(--accent); color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
 
         .categories { display: flex; gap: 8px; overflow-x: auto; padding: 0 15px 12px 15px; scrollbar-width: none; }
         .categories::-webkit-scrollbar { display: none; }
@@ -36,9 +36,9 @@
         .section-title { font-size: 15px; font-weight: 800; }
         .count-badge { background: rgba(37, 99, 235, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: bold; }
 
-        .apps-list { padding: 0 15px; display: flex; flex-direction: column; gap: 9px; }
+        .apps-list { padding: 0 15px; display: flex; flex-direction: column; gap: 9px; min-height: 200px; }
         
-        .app-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; }
+        .app-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; contain: content; }
         .app-main { display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 1; min-width: 0; padding-left: 8px; }
         .app-icon { width: 50px; height: 50px; border-radius: 11px; background: #1e293b; object-fit: cover; flex-shrink: 0; }
         .app-info { display: flex; flex-direction: column; min-width: 0; }
@@ -69,7 +69,7 @@
 
     <div class="search-area">
         <div class="search-box">
-            <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن تطبيق، لعبة، أو أداة..." onkeyup="if(event.key==='Enter') executeSearch()">
+            <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن تطبيق، لعبة، أو أداة..." onkeyup="executeSearch()">
             <button class="search-btn" onclick="executeSearch()">🔍 بحث</button>
         </div>
     </div>
@@ -87,9 +87,7 @@
         <div class="count-badge" id="countBadge">0 عنصر</div>
     </div>
 
-    <div id="appsContainer" class="apps-list">
-        <div style="text-align:center; color:var(--text-sub); padding:30px;">جاري تحميل البيانات...</div>
-    </div>
+    <div id="appsContainer" class="apps-list"></div>
 
     <div id="appModal" class="modal" onclick="closeModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
@@ -118,13 +116,26 @@
 
     <script>
         let rawData = [];
+        let currentFilteredList = [];
         let currentFilter = 'all';
+        let renderedCount = 0;
+        const BATCH_SIZE = 25;
 
         const GAME_KEYWORDS = ['game', 'hack', 'pubg', '8ball', 'pool', 'clash', 'royale', 'duty', 'cod', 'gta', 'free fire', 'subway', 'car', 'ball', 'لعبة', 'العاب'];
         const DESIGN_KEYWORDS = ['videostar', 'video star', 'alight motion', 'alightmotion', 'picsart', 'capcut', 'photoshop', 'تصميم', 'مونتاج'];
         const TOOL_KEYWORDS = ['jailbreak', 'root', 'boost', 'booster', 'gearup', 'tool', 'tweak', 'filza', 'uncover', 'dopamine', 'trollstore', 'أداة', 'جيلبريك'];
 
-        async function loadData() {
+        async function initData() {
+            // التحميل السريع من التخزين المحلي فوراً إن وجد
+            const cachedData = localStorage.getItem('idk_store_data');
+            if (cachedData) {
+                try {
+                    rawData = JSON.parse(cachedData);
+                    filterCategory('all');
+                } catch (e) {}
+            }
+
+            // الجلب في الخلفية للتحديث
             const files = ['jom 2.json', 'IPA-AR.json'];
             for (let file of files) {
                 try {
@@ -132,16 +143,24 @@
                     if (!res.ok) res = await fetch(file);
                     if (res.ok) {
                         let data = await res.json();
-                        rawData = Array.isArray(data) ? data : (data.apps || data.items || []);
-                        filterCategory('all');
+                        let freshData = Array.isArray(data) ? data : (data.apps || data.items || []);
+                        localStorage.setItem('idk_store_data', JSON.stringify(freshData));
+                        
+                        if (!rawData.length) {
+                            rawData = freshData;
+                            filterCategory('all');
+                        }
                         return;
                     }
                 } catch (e) {}
             }
-            document.getElementById('appsContainer').innerHTML = '<div style="text-align:center; color:#ef4444; padding:20px;">خطأ في تحميل ملف JSON</div>';
+
+            if (!rawData.length) {
+                document.getElementById('appsContainer').innerHTML = '<div style="text-align:center; color:#ef4444; padding:20px;">خطأ في تحميل ملف JSON</div>';
+            }
         }
 
-        loadData();
+        initData();
 
         function isGame(app) {
             const str = ((app.name || '') + ' ' + (app.subtitle || '') + ' ' + (app.category || '')).toLowerCase();
@@ -172,63 +191,74 @@
             if (navMap[type]) document.getElementById(navMap[type]).classList.add('active');
 
             const titleEl = document.getElementById('sectionTitle');
-            let filtered = [];
 
             if (type === 'games') {
                 titleEl.innerText = 'قسم الألعاب';
-                filtered = rawData.filter(app => isGame(app));
+                currentFilteredList = rawData.filter(app => isGame(app));
             } else if (type === 'design') {
                 titleEl.innerText = 'التصميم والمونتاج';
-                filtered = rawData.filter(app => isDesign(app));
+                currentFilteredList = rawData.filter(app => isDesign(app));
             } else if (type === 'tools') {
                 titleEl.innerText = 'الأدوات والجيلبريك';
-                filtered = rawData.filter(app => isTool(app));
+                currentFilteredList = rawData.filter(app => isTool(app));
             } else if (type === 'plus') {
                 titleEl.innerText = 'تطبيقات البلس والشبكات';
-                filtered = rawData.filter(app => !isGame(app) && !isDesign(app) && !isTool(app));
+                currentFilteredList = rawData.filter(app => !isGame(app) && !isDesign(app) && !isTool(app));
             } else {
                 titleEl.innerText = 'التطبيقات المتاحة';
-                filtered = rawData;
+                currentFilteredList = rawData;
             }
 
-            renderStore(filtered);
+            resetAndRender();
         }
 
+        let searchTimeout;
         function executeSearch() {
-            const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            const titleEl = document.getElementById('sectionTitle');
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const query = document.getElementById('searchInput').value.toLowerCase().trim();
+                const titleEl = document.getElementById('sectionTitle');
 
-            if (!query) {
-                filterCategory(currentFilter);
-                return;
-            }
+                if (!query) {
+                    filterCategory(currentFilter);
+                    return;
+                }
 
-            titleEl.innerText = `نتائج البحث عن: "${query}"`;
-            
-            const filtered = rawData.filter(app => {
-                const name = (app.name || app.title || '').toLowerCase();
-                const note = (app.subtitle || app.caption || app.description || app.note || '').toLowerCase();
-                return name.includes(query) || note.includes(query);
-            });
+                titleEl.innerText = `نتائج البحث عن: "${query}"`;
+                currentFilteredList = rawData.filter(app => {
+                    const name = (app.name || app.title || '').toLowerCase();
+                    const note = (app.subtitle || app.caption || app.description || app.note || '').toLowerCase();
+                    return name.includes(query) || note.includes(query);
+                });
 
-            renderStore(filtered);
+                resetAndRender();
+            }, 150);
         }
 
-        function renderStore(list) {
+        function resetAndRender() {
             const container = document.getElementById('appsContainer');
             const countBadge = document.getElementById('countBadge');
             
             container.innerHTML = '';
-            countBadge.innerText = `${list.length} ${currentFilter === 'games' ? 'لعبة' : 'عنصر'}`;
+            renderedCount = 0;
+            countBadge.innerText = `${currentFilteredList.length} عنصر`;
 
-            if (!list || !list.length) {
+            if (!currentFilteredList.length) {
                 container.innerHTML = '<div style="text-align:center; color:var(--text-sub); padding:30px;">لا توجد نتائج مطابقة</div>';
                 return;
             }
 
-            const fragment = document.createDocumentFragment();
+            renderBatch();
+        }
 
-            list.forEach(app => {
+        function renderBatch() {
+            if (renderedCount >= currentFilteredList.length) return;
+
+            const container = document.getElementById('appsContainer');
+            const fragment = document.createDocumentFragment();
+            const nextBatch = currentFilteredList.slice(renderedCount, renderedCount + BATCH_SIZE);
+
+            nextBatch.forEach(app => {
                 const name = app.name || app.title || 'تطبيق';
                 const icon = app.iconURL || app.icon || app.icon_url || '';
                 const version = app.version || app.ver || '1.0';
@@ -243,7 +273,7 @@
                 item.className = 'app-item';
                 item.innerHTML = `
                     <div class="app-main">
-                        <img class="app-icon" src="${icon}" onerror="this.src='https://via.placeholder.com/50/1e293b/ffffff?text=App'">
+                        <img class="app-icon" src="${icon}" loading="lazy" onerror="this.src='https://via.placeholder.com/50/1e293b/ffffff?text=App'">
                         <div class="app-info">
                             <div class="app-title">${name}</div>
                             <div class="app-sub">إصدار ${version}</div>
@@ -258,7 +288,15 @@
             });
 
             container.appendChild(fragment);
+            renderedCount += nextBatch.length;
         }
+
+        // التمرير اللانهائي لتحميل الدفعات القادمة تلقائياً
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+                requestAnimationFrame(renderBatch);
+            }
+        });
 
         function openDetails(app, installLink) {
             const note = app.subtitle || app.caption || app.description || app.note || 'لا توجد ملاحظات إضافية لهذا التطبيق.';
